@@ -14,9 +14,7 @@ defmodule Chat.RoomChannel do
   """
   def join("rooms:lobby", message, socket) do
     Process.flag(:trap_exit, true)
-    :timer.send_interval(5000, :ping)
     send(self, {:after_join, message})
-
     {:ok, socket}
   end
 
@@ -27,10 +25,6 @@ defmodule Chat.RoomChannel do
   def handle_info({:after_join, msg}, socket) do
     broadcast! socket, "user:entered", %{user: msg["user"]}
     push socket, "join", %{status: "connected"}
-    {:noreply, socket}
-  end
-  def handle_info(:ping, socket) do
-    push socket, "new:msg", %{user: "SYSTEM", body: "ping"}
     {:noreply, socket}
   end
 
